@@ -69,7 +69,7 @@ void initSeq(short numeroGiri, short numLed) {
   for(int i = 0; i < numLed * numeroGiri; i++) {
     switch( ( i / mezzoGiro) % 6) {
       case 0:
-      	color = scalinoBlend * (i % +8) <= 255 ? ring.Color(255, (scalinoBlend*(i % 8)), 0) : ring.Color(255, 255, 0);
+      	color = scalinoBlend * (i % + mezzoGiro) <= 255 ? ring.Color(255, (scalinoBlend*(i % mezzoGiro)), 0) : ring.Color(255, 255, 0);
       break;
       case 1:
       	color = 255 - (scalinoBlend * (i % mezzoGiro)) >= 0 ? ring.Color(255 - (scalinoBlend * (i % mezzoGiro)), 255, 0) : ring.Color(0, 255, 0);
