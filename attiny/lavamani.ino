@@ -3,7 +3,7 @@
 #define PIN_RING 0
 #define PIN_PAR 1
 #define RING_SIZE 16
-#define WAIT_TIME 5000
+#define WAIT_TIME 60000
 #define BLINK_TIME 500
 
 /* Variabili */
