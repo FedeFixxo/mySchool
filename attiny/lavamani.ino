@@ -24,7 +24,7 @@ void setup() {
   ring.begin();
   rosso = ring.Color(255, 0, 0);
   verde = ring.Color(0, 255, 0);
-  initSeq(3);
+  initSeq(3, RING_SIZE);
 }
 
 void loop() {  
@@ -62,30 +62,32 @@ void loop() {
 
 // Bland spero corretto del campo HUE su 3 giri 
 // Da Rosso a Verde a Blu
-void initSeq(int numeroGiri) {
+void initSeq(short numeroGiri, short numLed) {
   uint32_t color;
-  for(int i = 0; i < RING_SIZE * numeroGiri; i++) {    
-    switch( ( (2 * i) / RING_SIZE) % 6) {
+  const short mezzoGiro = numLed / 2;
+  const short scalinoBlend = 256 / mezzoGiro;
+  for(int i = 0; i < numLed * numeroGiri; i++) {
+    switch( ( i / mezzoGiro) % 6) {
       case 0:
-      	color = 32 * (i % 8) <= 255 ? ring.Color(255, (32*(i % 8)), 0) : ring.Color(255, 255, 0);
+      	color = scalinoBlend * (i % +8) <= 255 ? ring.Color(255, (scalinoBlend*(i % 8)), 0) : ring.Color(255, 255, 0);
       break;
       case 1:
-      	color = 255 - (32 * (i % 8)) >= 0 ? ring.Color(255 - (32 * (i % 8)), 255, 0) : ring.Color(0, 255, 0);
+      	color = 255 - (scalinoBlend * (i % mezzoGiro)) >= 0 ? ring.Color(255 - (scalinoBlend * (i % mezzoGiro)), 255, 0) : ring.Color(0, 255, 0);
       break;
       case 2:
-      	color = 32 * (i % 8) <= 255 ? ring.Color(0, 255, (32*(i % 8))) : ring.Color(0, 255, 255);
+      	color = scalinoBlend * (i % mezzoGiro) <= 255 ? ring.Color(0, 255, (scalinoBlend*(i % mezzoGiro))) : ring.Color(0, 255, 255);
       break;
       case 3:
-      	color = 255 - (32 * (i % 8)) >= 0 ? ring.Color(0, 255 - (32 * (i % 8)), 255) : ring.Color(0, 0, 255);
+      	color = 255 - (scalinoBlend * (i % mezzoGiro)) >= 0 ? ring.Color(0, 255 - (scalinoBlend * (i % mezzoGiro)), 255) : ring.Color(0, 0, 255);
       break;
       case 4:
-      	color = 32 * (i % 8) <= 255 ? ring.Color(32*(i % 8), 0, 255) : ring.Color(255, 0, 255);
+      	color = scalinoBlend * (i % mezzoGiro) <= 255 ? ring.Color(scalinoBlend*(i % mezzoGiro), 0, 255) : ring.Color(255, 0, 255);
       break;
       case 5:
-      	color = 255 - (32 * (i % 8)) >= 0 ? ring.Color(255, 0, 255 - (32 * (i % 8))) : ring.Color(255, 0, 0);
+      	color = 255 - (scalinoBlend * (i % mezzoGiro)) >= 0 ? ring.Color(255, 0, 255 - (scalinoBlend * (i % mezzoGiro))) : ring.Color(255, 0, 0);
       break;
     }
-    ring.setPixelColor(i%16, color);    
+    ring.setPixelColor(i%numLed, color);
   	ring.show();
     delay(20);
   }
