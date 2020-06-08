@@ -1,0 +1,64 @@
+<html><head>
+        <title>Arduino</title>
+        <link rel="stylesheet" type="text/css" href="/style.css">
+        <script src="/script.js"></script>
+        <link rel="stylesheet" type="text/css" href="/libs/noti.css">
+        <script src="/libs/noti.js"></script>
+        <script src="/libs/jquery.js"></script>
+    </head>
+    <body onload="loaded()">
+        <canvas id="canvas" width="320" height="240"></canvas>
+        <div id="overlay" style="left: 515.833px;">
+            <div id="overlayheader">
+                <h1>Benvenuto!</h1>
+                <p>Sei sulla scheda SD</p>
+            </div>
+            <table>
+                <tbody><tr>
+                    <td>
+                        <input type="number" id="drawLineX0" min="0" max="320" value="0">
+                    </td>
+                    <td>
+                        <input type="number" id="drawLineY0" min="0" max="240" value="0">
+                    </td>
+                    <td>
+                        <input type="number" id="drawLineX1" min="0" max="320" value="320">
+                    </td>
+                    <td>
+                        <input type="number" id="drawLineY1" min="0" max="240" value="240">
+                    </td>
+                    <td>
+                        <input type="color" id="drawLineColor" value="#FFFFFF">
+                    </td>
+                    <td>
+                        <input type="button" value="Linea" onclick="click_drawLine()">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <input type="color" id="fillScreenColor" value="#000000">
+                    </td>
+                    <td colspan="3">
+                        <input type="button" value="Riempi schermo" onclick="click_fillScreen()">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="6">
+                        <div id="btnPot" onclick="click_btnPot();">
+                            <div id="bar">
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <input type="file" id="fileImage" accept=".png">
+                    </td>
+                    <td colspan="3">
+                        <input type="button" value="Display" onclick="click_drawImage()">
+                    </td>
+                </tr>
+            </tbody></table>
+        </div>
+    
+</body></html>
