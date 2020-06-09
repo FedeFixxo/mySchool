@@ -40,3 +40,20 @@ void GET_pot(EthernetClient* client, EthernetServer* server) {
   client->println("data: CLOSED\n");
   client->println();
 }
+
+void GET_touch(EthernetClient* client, EthernetServer* server, TouchScreen* ts) {
+  client->println("HTTP/1.1 200 OK");
+  client->println("Content-Type: text/event-stream");
+  client->println();
+  while(!server->available()) {
+    TSPoint p = ts->getPoint();
+    pinMode(XM, OUTPUT);
+    pinMode(YP, OUTPUT);
+    if(p.z > 5) {
+      client->println("data: { \"x\": " + String(map(p.y, 80, 900, 320, 0)) + ", \"y\": " + String(map(p.x, 120, 910, 240, 0)) + "}\n");
+    }
+    delay(1);
+  }
+  client->println("data: CLOSED\n");
+  client->println();
+}

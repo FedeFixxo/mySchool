@@ -46,23 +46,26 @@ function click_btnPot() {
     sse = true;
 }
 
-function click_drawImage() {
+async function click_drawImage() {
     const myFile = document.getElementById("fileImage").files[0];    
     const reader = new FileReader();
     reader.addEventListener('load', (e) => {
         let base_image = new Image();
         base_image.src = e.target.result;
         //console.log(e.target.result);
-        base_image.onload = function(){
+        base_image.onload = async function(){
             ctx.drawImage(base_image, 0, 0);
-            for(let y = 0; y < 1; y++) {
+            for(let y = 0; y < 120; y++) {
                 line = [];
                 for(let x = 0; x < 320; x++) {
                     const cols = ctx.getImageData(x, y, 1, 1).data;
-                    line.push(RGBTo565(cols[0], cols[1], cols[2]).toString(16));
-                }
-                drawRow(y, line);
-                console.log(line);
+                    line.push(RGBTo565(cols[0], cols[1], cols[2]).toString(10).padStart(5, "0"));
+                    if((x + 1) % 160 == 0) {
+                        drawSegment(y, x - 159, 160, line);                        
+                        line = [];
+                        await wait(20);
+                    }
+                }                
             }
         }
     });
@@ -96,11 +99,11 @@ function drawLine(x0, y0, x1, y1, color) {
     window.createNotification({showDuration: 5000})({ title: "Drawline", message: "From (" + x0 + ", " + y0 + ") to (" + x1 + ", " + y1 + ")"});
 }
 
-function drawRow(rowIndex, line) {
+function drawSegment(rowIndex, colIndex, length, line) {
     $.ajax({
         url : '/drawRow',
         method : 'POST',
-        data : '<params><rowIndex>' + rowIndex + '</rowIndex><line>' + line + '</line></params>'
+        data : '<params><rowIndex>' + rowIndex + '</rowIndex><colIndex>' + colIndex + '</colIndex><length>' + length + '</length><line>' + line + '</line></params>'
     });    
 }
 
@@ -137,32 +140,65 @@ function map(x, in_min, in_max, out_min, out_max) {
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
+function wait(time) {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            resolve();
+        }, time);
+    });
+}
 /* SSE */
-var eventSource;
+var eventSourcePot;
+var eventSourceTouch;
 
-function listenSSE() {
-    eventSource = new EventSource("/pot");
+function listenPotSSE() {
+    eventSourcePot = new EventSource("/pot");
 
-    eventSource.onmessage = (data) => {
+    eventSourcePot.onmessage = (data) => {
         if(data.data == "CLOSE") {
             $('#bar').text("");
             $('#bar').css('width', '0px');            
-            eventSource.close();
+            eventSourcePot.close();
             return;
         }
         $('#bar').text(data.data);
         $('#bar').css('width', map(data.data, 0, 1023, 0, 100) + '%');
     };
     
-    eventSource.onError = (error) => {
-        eventSource.close();
+    eventSourcePot.onError = (error) => {
+        eventSourcePot.close();
         console.log(error);
     };
 }
 
-function closeSSE() {
+function closePotSSE() {
     $('#bar').text("");
     $('#bar').css('width', '0px');
-    eventSource.close();
+    eventSourcePot.close();
     $.get( "/endPot");
+}
+
+function listenTouchSSE() {
+    eventSourceTouch = new EventSource("/touch");
+    $("#payload").css("background-color", "rgba(255, 255, 255, 255)");
+    eventSourceTouch.onmessage = (data) => {
+        if(data.data == "CLOSE") {
+            eventSourceTouch.close();
+            return;
+        }
+        let coord = JSON.parse(data.data);
+        $("#payload").css({left:coord.x/3.2 + "%", top:coord.y/2.4 + "%"});
+    };
+    
+    eventSourceTouch.onError = (error) => {
+        eventSourceTouch.close();
+        $("#payload").css("background-color", "rgba(255, 255, 255, 0)");
+        console.log(error);
+    };
+}
+
+function closeTouchSSE() {
+    eventSourceTouch.close();
+    $("#payload").css("background-color", "rgba(255, 255, 255, 0)");
+    $.get( "/endTouch");
 }

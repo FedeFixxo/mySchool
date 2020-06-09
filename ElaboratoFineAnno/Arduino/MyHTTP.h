@@ -1,14 +1,14 @@
 #include "Endpoints.h"
 
 String readRequest(EthernetClient* client);
-void handleRequest(EthernetClient* client, EthernetServer* server, String request);
+void handleRequest(EthernetClient* client, EthernetServer* server, String request, Elegoo_TFTLCD* tft, TouchScreen* ts);
 void sendHTTP(EthernetClient* client, int response, String options);
 bool sendFile(EthernetClient* client, String fileName);
-void handleGet(EthernetClient* client, EthernetServer* server, String target, String request, Elegoo_TFTLCD* tft);
+void handleGet(EthernetClient* client, EthernetServer* server, String target, String request, Elegoo_TFTLCD* tft, TouchScreen* ts);
 void handlePost(EthernetClient* client, String target, String request, Elegoo_TFTLCD* tft);
 String paramString(String request);
 
-void handleGet(EthernetClient* client, EthernetServer* server, String target, String request, Elegoo_TFTLCD* tft) {
+void handleGet(EthernetClient* client, EthernetServer* server, String target, String request, Elegoo_TFTLCD* tft, TouchScreen* ts) {
   if(target == "/") {
     sendHTTP(client, 200, "");
     sendFile(client, "index.htm");
@@ -18,14 +18,13 @@ void handleGet(EthernetClient* client, EthernetServer* server, String target, St
   } else if(target == "/style.css" || target == "/libs/noti.css") {
     sendHTTP(client, 200, "Content-Type: text/css\n");
     sendFile(client, target.substring(1));
-  }  else if(target == "/pot") {
+  } else if(target == "/pot") {
     GET_pot(client, server);
-  } else if(target == "/endPot") {    
+  } else if(target == "/endPot" || target == "/endTouch") {
     sendHTTP(client, 200, "");
     client->println("data: CLOSED\n");
-  } else if(target == "/endPot") {
-    sendHTTP(client, 200, "");
-    client->println("data: CLOSED\n");
+  } else if(target == "/touch") {
+    GET_touch(client, server, ts);
   } else {
     sendHTTP(client, 404, "");
     tft->println("GET " + target);
@@ -71,10 +70,10 @@ String readRequest(EthernetClient* client) {
   return request;
 }
 
-void handleRequest(EthernetClient* client, EthernetServer* server, String request, Elegoo_TFTLCD* tft) {
+void handleRequest(EthernetClient* client, EthernetServer* server, String request, Elegoo_TFTLCD* tft, TouchScreen* ts) {
   if(request.indexOf("GET ") >= 0) {
     String target = request.substring(request.indexOf("GET ") + 4, request.indexOf(" HTTP/1.1"));
-    handleGet(client, server, target, request, tft);
+    handleGet(client, server, target, request, tft, ts);
   } else if(request.indexOf("POST ") >= 0) {
     String target = request.substring(request.indexOf("POST ") + 5, request.indexOf(" HTTP/1.1"));
     handlePost(client, target, request, tft);

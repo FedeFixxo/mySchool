@@ -1,9 +1,11 @@
+#include <TouchScreen.h>
 #include <Elegoo_TFTLCD.h>
 #include <Ethernet.h>
 #include <SD.h>
 #include "Utils.h"
 
 Elegoo_TFTLCD tft(A3, A2, A1, A0, A4);
+TouchScreen ts = TouchScreen(XP, YP, XM, YM, 300);
 byte mac[6] = { 0x90, 0xA2, 0xDA, 0xF9, 0xE7, 0x20 };
 IPAddress ip(192, 168, 1, 69);
 IPAddress gateway(192, 168, 1, 1);
@@ -27,10 +29,12 @@ void setup() {
   pinMode(POT_GND, OUTPUT);
   pinMode(POT_VCC, OUTPUT);
   pinMode(POT_PIN, INPUT);
-  
+  pinMode(TOUCHSCREEN, OUTPUT);
+
   digitalWrite(POT_GND, LOW);
   digitalWrite(POT_VCC, HIGH);
   analogRead(POT_PIN);
+  digitalWrite(TOUCHSCREEN, HIGH);
   
   tone(BUZZER, 523, 250);
   delay(250);
@@ -43,10 +47,10 @@ void setup() {
   noTone(BUZZER);  
 }
 
-void loop() {
+void loop() {  
   EthernetClient client = server.available();
   if(client) {    
-    handleRequest(&client, &server, readRequest(&client), &tft);
+    handleRequest(&client, &server, readRequest(&client), &tft, &ts);
     client.stop();
   }
 }
