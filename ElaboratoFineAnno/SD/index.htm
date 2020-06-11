@@ -8,14 +8,14 @@
     </head>
     <body onload="loaded()">
         <canvas id="canvas" width="320" height="240"></canvas>
-        <div id="payload" style="width: 100px; height: 100px; background-color: rgba(255, 255, 255, 0); position: absolute;"></div>
-        <div id="overlay" style="left: 515.833px;">
+        <div id="payload"></div>
+        <div id="overlay">
             <div id="overlayheader">
                 <h1>Benvenuto!</h1>
                 <p>Sei sulla scheda SD</p>
             </div>
             <table>
-                <tbody><tr>
+                <tr>
                     <td>
                         <input type="number" id="drawLineX0" min="0" max="320" value="0">
                     </td>
@@ -37,10 +37,10 @@
                 </tr>
                 <tr>
                     <td colspan="3">
-                        <input type="color" id="fillScreenColor" value="#000000">
+                        <input type="color" id="fillScreenColor" style="width: 100%;" value="#000000">
                     </td>
                     <td colspan="3">
-                        <input type="button" value="Riempi schermo" onclick="click_fillScreen()">
+                        <input type="button" value="Riempi schermo" style="width: 100%;" onclick="click_fillScreen()">
                     </td>
                 </tr>
                 <tr>
@@ -52,14 +52,11 @@
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="3">
-                        <input type="file" id="fileImage" accept=".png">
-                    </td>
-                    <td colspan="3">
-                        <input type="button" value="Display" onclick="click_drawImage()">
+                    <td colspan="6">
+                        <input type="button" value="Touch" style="width: 100%;" onclick="click_btnTouch()">
                     </td>
                 </tr>
-            </tbody></table>
+            </table>
         </div>
-    
-</body></html>
+    </body>
+</html>
