@@ -20,11 +20,11 @@ void handleGet(EthernetClient* client, EthernetServer* server, String target, St
     sendFile(client, target.substring(1));
   } else if(target == "/pot") {
     GET_pot(client, server);
-  } else if(target == "/endPot" || target == "/endTouch") {
-    sendHTTP(client, 200, "");
-    client->println("data: CLOSED\n");
   } else if(target == "/touch") {
     GET_touch(client, server, ts);
+  } else if(target == "/close") {
+    sendHTTP(client, 200, "");
+    client->println("Closed");
   } else {
     sendHTTP(client, 404, "");
     tft->println("GET " + target);
@@ -109,7 +109,6 @@ bool sendFile(EthernetClient* client, String fileName) {
     readedBuffer[readed] = 0;
     client->print(readedBuffer);   
   }
-  //client->println();
   toServe.close();
   return true;
 }
