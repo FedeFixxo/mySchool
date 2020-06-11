@@ -1,8 +1,10 @@
 var c;
 var ctx;
-var sse = false;
+var potSse = false;
+var touchSse = false;
 
 function loaded() {
+    $("#payload").hide();
     dragElement(document.getElementById("overlay"));
     $("#overlay").css("left", ($(document).width()-$("#overlay").width())/2 + "px");
     c = document.getElementById("canvas");
@@ -23,60 +25,46 @@ function click_drawLine() {
 
 function click_fillScreen() {
     const color = $('#fillScreenColor').val();
-    fillScreen(color);
     canvas_fillScreen(color);
-
+    
     const r = parseInt(color.substring(1, 3), 16);
     const g = parseInt(color.substring(3, 5), 16);
     const b = parseInt(color.substring(5, 7), 16);
-    const col = (( r + g + b) / 3) <= 60 ? "#eeeeee" : "#111111";    
+    const col = (( r + g + b) / 3) <= 60 ? "#eeeeee" : "#111111";
     $("h1").css("color", col);
     $("p").css("color", col);
     $("#bar").css("color", col);
+    $("#payload").css("background", col);
     $("#bar").css("background", color);
+    fillScreen(color);
 }
 
 function click_btnPot() {    
-    if(sse) {
-        closeSSE();
-        sse = false;
-        return;
+    if(potSse) {
+        closePotSSE();
+    } else {
+        if(touchSse) {
+            closeTouchSSE();
+        }
+        listenPotSSE();
     }
-    listenSSE();
-    sse = true;
 }
 
-async function click_drawImage() {
-    const myFile = document.getElementById("fileImage").files[0];    
-    const reader = new FileReader();
-    reader.addEventListener('load', (e) => {
-        let base_image = new Image();
-        base_image.src = e.target.result;
-        //console.log(e.target.result);
-        base_image.onload = async function(){
-            ctx.drawImage(base_image, 0, 0);
-            for(let y = 0; y < 120; y++) {
-                line = [];
-                for(let x = 0; x < 320; x++) {
-                    const cols = ctx.getImageData(x, y, 1, 1).data;
-                    line.push(RGBTo565(cols[0], cols[1], cols[2]).toString(10).padStart(5, "0"));
-                    if((x + 1) % 160 == 0) {
-                        drawSegment(y, x - 159, 160, line);                        
-                        line = [];
-                        await wait(20);
-                    }
-                }                
-            }
+function click_btnTouch() {    
+    if(touchSse) {
+        closeTouchSSE();
+    } else {
+        if(potSse) {
+            closePotSSE();
         }
-    });
-    reader.readAsDataURL(myFile);
+        listenTouchSSE();
+    }    
 }
 
 /* Canvas */
 function canvas_drawLine(x0, y0, x1, y1, color) {
     ctx.beginPath();
-    ctx.strokeStyle = color;
-    //console.log(x0, y0, x1, y1);
+    ctx.strokeStyle = color;    
     ctx.moveTo(x0,y0);
     ctx.lineTo(x1,y1);
     ctx.stroke();
@@ -97,14 +85,6 @@ function drawLine(x0, y0, x1, y1, color) {
         data : '<params><x0>' + x0 + '</x0><y0>' + y0 + '</y0><x1>' + x1 + '</x1><y1>' + y1 + '</y1><color>' + hexTo565(color) + '</color></params>'
     });
     window.createNotification({showDuration: 5000})({ title: "Drawline", message: "From (" + x0 + ", " + y0 + ") to (" + x1 + ", " + y1 + ")"});
-}
-
-function drawSegment(rowIndex, colIndex, length, line) {
-    $.ajax({
-        url : '/drawRow',
-        method : 'POST',
-        data : '<params><rowIndex>' + rowIndex + '</rowIndex><colIndex>' + colIndex + '</colIndex><length>' + length + '</length><line>' + line + '</line></params>'
-    });    
 }
 
 function fillScreen(color) {
@@ -140,32 +120,22 @@ function map(x, in_min, in_max, out_min, out_max) {
     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
-function wait(time) {
-    return new Promise(resolve => {
-        setTimeout(() => {
-            resolve();
-        }, time);
-    });
-}
 /* SSE */
 var eventSourcePot;
 var eventSourceTouch;
 
 function listenPotSSE() {
     eventSourcePot = new EventSource("/pot");
+    potSse = true;
 
     eventSourcePot.onmessage = (data) => {
-        if(data.data == "CLOSE") {
-            $('#bar').text("");
-            $('#bar').css('width', '0px');            
-            eventSourcePot.close();
-            return;
-        }
         $('#bar').text(data.data);
         $('#bar').css('width', map(data.data, 0, 1023, 0, 100) + '%');
     };
     
     eventSourcePot.onError = (error) => {
+        potSse = false;
+        $.get('/close');
         eventSourcePot.close();
         console.log(error);
     };
@@ -174,31 +144,33 @@ function listenPotSSE() {
 function closePotSSE() {
     $('#bar').text("");
     $('#bar').css('width', '0px');
-    eventSourcePot.close();
-    $.get( "/endPot");
+    potSse = false;
+    $.get('/close');
+    eventSourcePot.close();    
 }
 
 function listenTouchSSE() {
     eventSourceTouch = new EventSource("/touch");
-    $("#payload").css("background-color", "rgba(255, 255, 255, 255)");
+    touchSse = true;
+    $("#payload").show();
+
     eventSourceTouch.onmessage = (data) => {
-        if(data.data == "CLOSE") {
-            eventSourceTouch.close();
-            return;
-        }
         let coord = JSON.parse(data.data);
         $("#payload").css({left:coord.x/3.2 + "%", top:coord.y/2.4 + "%"});
     };
     
     eventSourceTouch.onError = (error) => {
+        touchSse = false;
+        $.get('/close');
         eventSourceTouch.close();
-        $("#payload").css("background-color", "rgba(255, 255, 255, 0)");
+        $("#payload").hide();
         console.log(error);
     };
 }
 
 function closeTouchSSE() {
+    $("#payload").hide();
+    touchSse = false;
+    $.get('/close');
     eventSourceTouch.close();
-    $("#payload").css("background-color", "rgba(255, 255, 255, 0)");
-    $.get( "/endTouch");
 }

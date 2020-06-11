@@ -43,3 +43,10 @@ h1, p {
     text-align: center;
     vertical-align: middle;
 }
+
+#payload {
+    width: 10vh;
+    height: 10vh;
+    background-color: #eeeeee;
+    position: absolute;
+}
