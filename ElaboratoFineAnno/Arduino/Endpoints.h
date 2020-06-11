@@ -37,7 +37,6 @@ void GET_pot(EthernetClient* client, EthernetServer* server) {
     client->println("data: " + String(analogRead(POT_PIN)) + "\n");
     delay(10);
   }
-  client->println("data: CLOSED\n");
   client->println();
 }
 
@@ -54,6 +53,5 @@ void GET_touch(EthernetClient* client, EthernetServer* server, TouchScreen* ts) 
     }
     delay(1);
   }
-  client->println("data: CLOSED\n");
   client->println();
 }
