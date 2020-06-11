@@ -29,12 +29,10 @@ void setup() {
   pinMode(POT_GND, OUTPUT);
   pinMode(POT_VCC, OUTPUT);
   pinMode(POT_PIN, INPUT);
-  pinMode(TOUCHSCREEN, OUTPUT);
 
   digitalWrite(POT_GND, LOW);
   digitalWrite(POT_VCC, HIGH);
   analogRead(POT_PIN);
-  digitalWrite(TOUCHSCREEN, HIGH);
   
   tone(BUZZER, 523, 250);
   delay(250);

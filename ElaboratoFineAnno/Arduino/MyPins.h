@@ -1,10 +1,9 @@
-#define BUZZER 45
+#define BUZZER 49
 
 #define POT_VCC A8
-#define POT_PIN A10
-#define POT_GND A12
+#define POT_PIN A9
+#define POT_GND A10
 
-#define TOUCHSCREEN 30
 #define YP A3
 #define XM A2
 #define YM 23
