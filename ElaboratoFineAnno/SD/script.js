@@ -13,7 +13,7 @@ function loaded() {
 }
 
 /* Click */
-function click_drawLine() {
+function click_btnDrawLine() {
     const x0 = Math.floor($('#drawLineX0').val());
     const y0 = Math.floor($('#drawLineY0').val());
     const x1 = Math.floor($('#drawLineX1').val());
@@ -23,7 +23,7 @@ function click_drawLine() {
     canvas_drawLine(x0, y0, x1, y1, color);
 }
 
-function click_fillScreen() {
+function click_btnFillScreen() {
     const color = $('#fillScreenColor').val();
     canvas_fillScreen(color);
     
@@ -116,10 +116,6 @@ function dragElement(elmnt) {
     function closeDragElement() { document.onmouseup = null; document.onmousemove = null; }
 }
 
-function map(x, in_min, in_max, out_min, out_max) {
-    return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-}
-
 /* SSE */
 var eventSourcePot;
 var eventSourceTouch;
@@ -130,7 +126,7 @@ function listenPotSSE() {
 
     eventSourcePot.onmessage = (data) => {
         $('#bar').text(data.data);
-        $('#bar').css('width', map(data.data, 0, 1023, 0, 100) + '%');
+        $('#bar').css('width', data.data/10.23 + '%');
     };
     
     eventSourcePot.onError = (error) => {
