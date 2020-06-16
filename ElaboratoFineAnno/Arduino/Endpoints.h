@@ -1,5 +1,12 @@
 #include "MyPins.h"
 
+void POST_drawLine(EthernetClient* client, String params, Elegoo_TFTLCD* tft);
+void POST_fillScreen(EthernetClient* client, String params, Elegoo_TFTLCD* tft);
+void POST_drawRow(EthernetClient* client, String params, Elegoo_TFTLCD* tft);
+void GET_pot(EthernetClient* client, EthernetServer* server);
+void GET_touch(EthernetClient* client, EthernetServer* server, TouchScreen* ts);
+
+
 void POST_drawLine(EthernetClient* client, String params, Elegoo_TFTLCD* tft) {
   int x0 = params.substring(params.indexOf("<x0>") + 4, params.indexOf("</x0>")).toInt();
   int y0 = params.substring(params.indexOf("<y0>") + 4, params.indexOf("</y0>")).toInt();
