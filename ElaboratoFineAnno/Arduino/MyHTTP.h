@@ -2,10 +2,10 @@
 
 String readRequest(EthernetClient* client);
 void handleRequest(EthernetClient* client, EthernetServer* server, String request, Elegoo_TFTLCD* tft, TouchScreen* ts);
-void sendHTTP(EthernetClient* client, int response, String options);
-bool sendFile(EthernetClient* client, String fileName);
 void handleGet(EthernetClient* client, EthernetServer* server, String target, String request, Elegoo_TFTLCD* tft, TouchScreen* ts);
 void handlePost(EthernetClient* client, String target, String request, Elegoo_TFTLCD* tft);
+void sendHTTP(EthernetClient* client, int response, String options);
+bool sendFile(EthernetClient* client, String fileName);
 String paramString(String request);
 
 void handleGet(EthernetClient* client, EthernetServer* server, String target, String request, Elegoo_TFTLCD* tft, TouchScreen* ts) {
