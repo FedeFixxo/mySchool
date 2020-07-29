@@ -1,0 +1,62 @@
+<html><head>
+        <title>Arduino</title>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <script src="script.js"></script>
+        <link rel="stylesheet" type="text/css" href="libs/noti.css">
+        <script src="libs/noti.js"></script>
+        <script src="libs/jquery.js"></script>
+    </head>
+    <body onload="loaded()">
+        <canvas id="canvas" width="320" height="240"></canvas>
+        <div id="payload"></div>
+        <div id="overlay">
+            <div id="overlayheader">
+                <h1>Benvenuto!</h1>
+                <p>Sei sulla scheda SD</p>
+            </div>
+            <table>
+                <tr>
+                    <td>
+                        <input type="number" id="drawLineX0" min="0" max="320" value="0">
+                    </td>
+                    <td>
+                        <input type="number" id="drawLineY0" min="0" max="240" value="0">
+                    </td>
+                    <td>
+                        <input type="number" id="drawLineX1" min="0" max="320" value="320">
+                    </td>
+                    <td>
+                        <input type="number" id="drawLineY1" min="0" max="240" value="240">
+                    </td>
+                    <td>
+                        <input type="color" id="drawLineColor" value="#FFFFFF">
+                    </td>
+                    <td>
+                        <input type="button" value="Linea" onclick="click_btnDrawLine()">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3">
+                        <input type="color" id="fillScreenColor" style="width: 100%;" value="#000000">
+                    </td>
+                    <td colspan="3">
+                        <input type="button" value="Riempi schermo" style="width: 100%;" onclick="click_btnFillScreen()">
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="6">
+                        <div id="btnPot" onclick="click_btnPot();">
+                            <div id="bar">
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="6">
+                        <input type="button" value="Touch" style="width: 100%;" onclick="click_btnTouch()">
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>
